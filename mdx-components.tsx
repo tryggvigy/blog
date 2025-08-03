@@ -1,4 +1,6 @@
 import type { MDXComponents } from 'mdx/types'
+import React from 'react'
+import { CodeBlock, InlineCode } from './src/components/blog/code-block'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -12,12 +14,23 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-blue-500 pl-4 my-4 italic">{children}</blockquote>
     ),
-    code: ({ children }) => (
-      <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm">{children}</code>
-    ),
-    pre: ({ children }) => (
-      <pre className="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto my-4">{children}</pre>
-    ),
+    code: ({ children, className }: { children: React.ReactNode; className?: string }) => {
+      // Check if this is a code block (inside a pre tag) or inline code
+      if (className?.startsWith('language-')) {
+        return <CodeBlock className={className}>{children as string}</CodeBlock>
+      }
+      return <InlineCode>{children}</InlineCode>
+    },
+    pre: ({ children }: { children: React.ReactNode }) => {
+      // For code blocks, we let the CodeBlock component handle the styling
+      if (React.isValidElement(children) && children.props?.className?.startsWith('language-')) {
+        return children
+      }
+      // Fallback for other pre content
+      return (
+        <pre className="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto my-4">{children}</pre>
+      )
+    },
     ...components,
   }
 }

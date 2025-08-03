@@ -3,6 +3,8 @@ import { getAllPosts, getPostBySlug } from '@/lib/mdx'
 import { formatDate } from '@/lib/utils'
 import { incrementViews } from '@/lib/db'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import { useMDXComponents } from '../../../../mdx-components'
+import { BlogPost } from '@/lib/types'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -39,24 +41,14 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   }
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const { slug } = await params
-  const post = getPostBySlug(slug)
-
-  if (!post) {
-    notFound()
-  }
-
-  // Increment view count (but don't await it to avoid blocking the page)
-  incrementViews(slug).catch(console.error)
-
+function BlogPostPageInner({ post }: { post: BlogPost }) {
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           {post.frontmatter.title}
         </h1>
-        
+
         <div className="flex items-center text-gray-600 text-sm mb-4">
           <time dateTime={post.frontmatter.date}>
             {formatDate(post.frontmatter.date)}
@@ -84,8 +76,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </header>
 
       <div className="prose prose-lg max-w-none">
-        <MDXRemote source={post.content} />
+        <MDXRemote source={post.content} components={useMDXComponents({})} />
       </div>
     </article>
   )
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { slug } = await params
+  const post = getPostBySlug(slug)
+
+  if (!post) {
+    notFound()
+  }
+
+  // Increment view count (but don't await it to avoid blocking the page)
+  incrementViews(slug).catch(console.error)
+
+  return <BlogPostPageInner post={post} />
 }
