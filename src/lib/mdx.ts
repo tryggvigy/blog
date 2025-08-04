@@ -1,35 +1,29 @@
-import type { ListingBlogPost } from './types';
+import type { Frontmatter } from './types';
 import { postMetadata as cssLayerOrderMeta } from '@/app/blog/css-layer-order-misconception/page.mdx';
 import { postMetadata as post2Meta } from '@/app/blog/post2/page.mdx';
 import { postMetadata as designSystemsMeta } from '@/app/blog/thoughts-on-design-systems/page.mdx';
 
 const allPosts = [
-  { metadata: designSystemsMeta },
-  { metadata: post2Meta },
-  { metadata: cssLayerOrderMeta },
-];
+  designSystemsMeta,
+  post2Meta,
+  cssLayerOrderMeta,
+] satisfies Array<Frontmatter>;
 
 // Import all posts dynamically - this will need to be updated when adding new posts
-export async function getAllPosts(): Promise<ListingBlogPost[]> {
-  const posts: ListingBlogPost[] = [];
+export async function getAllPostsFrontmatter(): Promise<Array<Frontmatter>> {
+  const posts: Frontmatter[] = [];
 
   try {
-    // Filter published posts and create BlogPost objects
-    allPosts.forEach(({ metadata }) => {
-      if (metadata.published !== false) {
-        posts.push({
-          slug: metadata.slug,
-          frontmatter: metadata,
-        });
+    // Filter published posts
+    allPosts.forEach((post) => {
+      if (post.published !== false) {
+        posts.push(post);
       }
     });
 
     // Sort by date
     posts.sort((a, b) => {
-      return (
-        new Date(b.frontmatter.date).getTime() -
-        new Date(a.frontmatter.date).getTime()
-      );
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
   } catch (error) {
     console.error('Error loading posts:', error);
@@ -39,26 +33,26 @@ export async function getAllPosts(): Promise<ListingBlogPost[]> {
 }
 
 export async function getAllTags(): Promise<string[]> {
-  const posts = await getAllPosts();
+  const posts = await getAllPostsFrontmatter();
   const tags = new Set<string>();
 
   posts.forEach((post) => {
-    post.frontmatter.tags?.forEach((tag) => tags.add(tag));
+    post.tags?.forEach((tag) => tags.add(tag));
   });
 
   return Array.from(tags).sort();
 }
 
-export async function searchPosts(query: string): Promise<ListingBlogPost[]> {
-  const posts = await getAllPosts();
+export async function searchPostsFrontmatter(
+  query: string
+): Promise<Frontmatter[]> {
+  const posts = await getAllPostsFrontmatter();
   const lowercaseQuery = query.toLowerCase();
 
   return posts.filter(
     (post) =>
-      post.frontmatter.title.toLowerCase().includes(lowercaseQuery) ||
-      post.frontmatter.description.toLowerCase().includes(lowercaseQuery) ||
-      post.frontmatter.tags.some((tag) =>
-        tag.toLowerCase().includes(lowercaseQuery)
-      )
+      post.title.toLowerCase().includes(lowercaseQuery) ||
+      post.description.toLowerCase().includes(lowercaseQuery) ||
+      post.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery))
   );
 }

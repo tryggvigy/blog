@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getAllPosts } from '@/lib/mdx';
+import { getAllPostsFrontmatter } from '@/lib/mdx';
 import { formatDate } from '@/lib/utils';
 
 export const metadata = {
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const posts = await getAllPosts();
+  const posts = await getAllPostsFrontmatter();
 
   if (posts.length === 0) {
     return (
@@ -26,16 +26,11 @@ export default async function Home() {
           <article key={post.slug} className="border-b border-border">
             <Link href={`/blog/${post.slug}`} className="block group pb-8">
               <h2 className="text-2xl font-semibold text-text-primary mb-2 group-hover:text-accent group-hover:underline transition-colors">
-                {post.frontmatter.title}
+                {post.title}
               </h2>
-              <p className="text-text-secondary mb-3">
-                {post.frontmatter.description}
-              </p>
-              <time
-                className="text-sm text-text-muted"
-                dateTime={post.frontmatter.date}
-              >
-                {formatDate(post.frontmatter.date)}
+              <p className="text-text-secondary mb-3">{post.description}</p>
+              <time className="text-sm text-text-muted" dateTime={post.date}>
+                {formatDate(post.date)}
               </time>
             </Link>
           </article>

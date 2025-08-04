@@ -1,8 +1,8 @@
 declare module '*.mdx' {
-  import type { PostFrontmatter } from '@/lib/types';
+  import type { Frontmatter } from '@/lib/types';
 
   const Component: React.ComponentType;
-  export const postMetadata: PostFrontmatter;
+  export const postMetadata: Frontmatter;
   export const metadata: {
     title: string;
     description: string;

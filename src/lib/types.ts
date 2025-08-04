@@ -1,4 +1,4 @@
-export interface PostFrontmatter {
+export interface Frontmatter {
   slug: string;
   title: string;
   description: string;
@@ -10,9 +10,6 @@ export interface PostFrontmatter {
 }
 
 export interface BlogPost {
-  slug: string;
-  frontmatter: PostFrontmatter;
+  frontmatter: Frontmatter;
   content: string;
 }
-
-export type ListingBlogPost = Omit<BlogPost, 'content'>;

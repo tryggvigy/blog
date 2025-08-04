@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchPosts } from '@/lib/mdx';
+import { searchPostsFrontmatter } from '@/lib/mdx';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Use file-based search
-    const results = await searchPosts(query.trim());
+    const results = await searchPostsFrontmatter(query.trim());
 
     return NextResponse.json({
       query,

@@ -1,19 +1,7 @@
+import { Frontmatter } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 
-interface PostHeaderProps {
-  title: string;
-  description: string;
-  date: string;
-  author: string;
-  tags: string[];
-}
-
-export function PostHeader({
-  title,
-  description,
-  date,
-  author,
-}: PostHeaderProps) {
+export function PostHeader({ title, description, date, author }: Frontmatter) {
   return (
     <header className="mb-8">
       <h1 className="text-4xl font-bold text-accent mb-4">{title}</h1>
