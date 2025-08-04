@@ -28,7 +28,7 @@ RUN npm ci --include=dev
 COPY . .
 
 # Build application
-CMD [ "npm", "run", "build" ]
+RUN npx next build
 
 # Remove development dependencies
 RUN npm prune --omit=dev
