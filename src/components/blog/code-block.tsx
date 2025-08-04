@@ -17,13 +17,18 @@ export async function CodeBlock({ children, className, lang }: CodeBlockProps) {
     transformers: [transformerNotationHighlight()],
   });
 
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <div
+      className="mb-4 syntax-highlighted"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }
 
 // Sync version for inline code
 export function InlineCode({ children }: { children: React.ReactNode }) {
   return (
-    <code className="bg-inline-code-bg px-1 py-0.5 rounded text-sm border border-border-subtle">
+    <code className="bg-inline-code-bg px-1 py-0.5 rounded border border-border-subtle">
       {children}
     </code>
   );

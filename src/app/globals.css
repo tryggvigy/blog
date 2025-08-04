@@ -65,3 +65,7 @@ p a {
   margin-inline-start: -8px;
   background-color: var(--background-highlight);
 }
+
+.shiki {
+  overflow-x: auto;
+}

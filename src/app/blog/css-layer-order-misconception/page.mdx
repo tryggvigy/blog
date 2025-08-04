@@ -199,6 +199,7 @@ This isn't just a theoretical gotcha. In practice, this behavior can cause **sil
 ```
 
 **Expected order:** `reset → components → utilities`
+
 **Actual order:** `components → reset → utilities`
 
 Result: Your utility classes work, but any reset styles you add later will override your component styles — the opposite of what you intended.
@@ -218,7 +219,8 @@ For normal declarations, unlayered styles always win:
 ```css
 @layer utilities {
   .btn.btn-primary.btn-large {
-    background: blue; /* High specificity, but layered */
+    /* High specificity, but layered */
+    background: blue;
   }
 }
 
@@ -235,11 +237,12 @@ With `!important`, the cascade **inverts**:
 ```css
 @layer utilities {
   .btn {
-    background: blue !important; /* This wins! */
+    /* This wins! */
+    background: blue !important;
   }
 }
 
-/* This loses, even though it's unlayered */
+  /* This loses, even though it's unlayered */
 .btn {
   background: red !important;
 }

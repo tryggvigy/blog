@@ -16,7 +16,7 @@ export function PostHeader({
 }: PostHeaderProps) {
   return (
     <header className="mb-8">
-      <h1 className="text-4xl font-bold text-text-primary mb-4">{title}</h1>
+      <h1 className="text-4xl font-bold text-accent mb-4">{title}</h1>
 
       <div className="flex items-center text-text-secondary text-sm mb-4">
         <time dateTime={date}>{formatDate(date)}</time>

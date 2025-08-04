@@ -1,5 +1,5 @@
 import { getAllPosts } from '@/lib/mdx';
-import PostCard from '@/components/blog/post-card';
+import PostRow from '@/components/blog/post-row';
 
 export const metadata = {
   title: 'Blog | Tech Blog',
@@ -22,7 +22,7 @@ export default async function BlogPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid gap-6 md:grid-cols-2">
         {posts.map((post) => (
-          <PostCard key={post.slug} post={post} />
+          <PostRow key={post.slug} post={post} />
         ))}
       </div>
     </div>

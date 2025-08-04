@@ -23,15 +23,18 @@ export default async function Home() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="space-y-8">
         {posts.map((post) => (
-          <article key={post.slug} className="border-b border-border pb-8">
-            <Link href={`/blog/${post.slug}`} className="block group">
-              <h2 className="text-2xl font-semibold text-text-primary mb-2 group-hover:text-accent transition-colors">
+          <article key={post.slug} className="border-b border-border">
+            <Link href={`/blog/${post.slug}`} className="block group pb-8">
+              <h2 className="text-2xl font-semibold text-text-primary mb-2 group-hover:text-accent group-hover:underline transition-colors">
                 {post.frontmatter.title}
               </h2>
               <p className="text-text-secondary mb-3">
                 {post.frontmatter.description}
               </p>
-              <time className="text-sm text-text-muted" dateTime={post.frontmatter.date}>
+              <time
+                className="text-sm text-text-muted"
+                dateTime={post.frontmatter.date}
+              >
                 {formatDate(post.frontmatter.date)}
               </time>
             </Link>
