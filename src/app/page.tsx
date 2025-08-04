@@ -1,9 +1,9 @@
-import Link from 'next/link'
-import { getAllPosts } from '@/lib/mdx'
-import PostCard from '@/components/blog/post-card'
+import Link from 'next/link';
+import { getAllPosts } from '@/lib/mdx';
+import PostCard from '@/components/blog/post-card';
 
-export default function Home() {
-  const posts = getAllPosts().slice(0, 3)
+export default async function Home() {
+  const posts = (await getAllPosts()).slice(0, 3);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -37,13 +37,16 @@ export default function Home() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-text-secondary mb-4">No posts yet. Check back soon!</p>
+            <p className="text-text-secondary mb-4">
+              No posts yet. Check back soon!
+            </p>
             <p className="text-sm text-text-muted">
-              Posts will appear here once you add MDX files to the content/posts directory.
+              Posts will appear here once you add MDX files to the content/posts
+              directory.
             </p>
           </div>
         )}
       </section>
     </div>
-  )
+  );
 }

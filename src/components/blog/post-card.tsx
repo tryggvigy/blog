@@ -1,9 +1,9 @@
-import Link from 'next/link'
-import { formatDate } from '@/lib/utils'
-import type { BlogPost } from '@/lib/types'
+import Link from 'next/link';
+import { formatDate } from '@/lib/utils';
+import type { BlogPost } from '@/lib/types';
 
 interface PostCardProps {
-  post: BlogPost
+  post: BlogPost;
 }
 
 export default function PostCard({ post }: PostCardProps) {
@@ -24,7 +24,7 @@ export default function PostCard({ post }: PostCardProps) {
             <span>{post.readingTime}</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {post.frontmatter.tags.slice(0, 3).map(tag => (
+            {post.frontmatter.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
                 className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-accent-light text-text-primary"
@@ -36,5 +36,5 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
       </Link>
     </article>
-  )
+  );
 }
