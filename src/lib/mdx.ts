@@ -1,8 +1,9 @@
 import type { ListingBlogPost } from './types';
 import { postMetadata as cssLayerOrderMeta } from '@/app/blog/css-layer-order-misconception/page.mdx';
 import { postMetadata as post2Meta } from '@/app/blog/post2/page.mdx';
+import { postMetadata as designSystemsMeta } from '@/app/blog/thoughts-on-design-systems/page.mdx';
 
-const allPosts = [{ metadata: post2Meta }, { metadata: cssLayerOrderMeta }];
+const allPosts = [{ metadata: designSystemsMeta }, { metadata: post2Meta }, { metadata: cssLayerOrderMeta }];
 
 // Import all posts dynamically - this will need to be updated when adding new posts
 export async function getAllPosts(): Promise<ListingBlogPost[]> {

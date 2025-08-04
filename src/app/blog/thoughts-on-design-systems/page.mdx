@@ -1,0 +1,193 @@
+import { PostHeader } from '@/components/blog/post-header';
+
+export const postMetadata = {
+  slug: 'thoughts-on-design-systems',
+  title: 'Thoughts on Design Systems',
+  description: 'My perspective on the philosophy of design systems, exploring the benefits of layered, composable architectures over strict lock-down approaches.',
+  date: '2025-02-10',
+  author: 'Tryggvi Gylfason',
+  tags: ['design-systems', 'react', 'frontend', 'architecture'],
+  published: true,
+};
+
+export const metadata = {
+  title: postMetadata.title,
+  description: postMetadata.description,
+  openGraph: {
+    title: postMetadata.title,
+    description: postMetadata.description,
+    type: 'article',
+    publishedTime: postMetadata.date,
+    authors: [postMetadata.author],
+    tags: postMetadata.tags,
+  },
+};
+
+<PostHeader {...postMetadata} />
+
+I'm trying to put down thoughts in writing that have been rattling around in my head for years.
+
+## Introduction: Understanding the "Lock It Down" Perspective
+
+Design systems naturally seek consistency—in brand, UX patterns, and code standards. As a result, many teams adopt a strict approach: lock down the internal structure and styling, provide only minimal props or variants (e.g., `variant="primary" | "danger"`) to prevent brand drift, and discourage or limit deeper overrides.
+
+Commonly, this "strict design system" approach is implemented in React with a single "API surface" layer of components with well defined props or knobs.
+
+At first glance, these "lock it down" tactics appear practical. They promise:
+
+- **Guaranteed Consistency**: Nobody can deviate from the standard, on-brand look.
+- **Reduced Complexity**: Developers just pass a few props rather than learning advanced styling.
+- **Lower Upgrade Risk**: If no one modifies the internals, major refactors become less likely to break existing usage.
+
+Yet, in fast-moving product organizations, especially those with diverse requirements and tight timelines, this purely locked-down model can present real challenges:
+
+- **Untracked Custom Solutions**: When teams need functionality the system doesn't provide, they may resort to private overrides or forceful CSS rules, diminishing uniformity.
+- **Bottlenecks & Slow Iteration**: If every new requirement depends on the design system team to add a variant, the backlog can grow quickly, delaying product launches.
+- **Strained Collaboration**: Designers and developers can encounter friction if small customizations require extensive changes to the official system.
+
+I'm not suggesting that strict guidelines are unhelpful; they have clear benefits. Instead, I believe that true consistency and agility can be achieved through a layered architecture, where:
+
+1. A blessed, top-level API covers common use cases with simple props (e.g., `<Button variant="primary" size="large" />`).
+2. An underlying composable layer (e.g., headless components, styling tokens, behavioral hooks) supports advanced or niche scenarios—reducing the need for unapproved workarounds.
+
+Before explaining why this approach is beneficial, let's review some common talking points from the "lock it down" perspective. **These points have merit;** the aim is to show how a layered design system can address them effectively—often enhancing consistency, collaboration, and development speed more than a rigid, single-layer approach would.
+
+## How This Post Is Organized
+
+Each typical argument for locking down design system components and customization will be enumerated, followed by a response from a layered, composable standpoint. These concerns are acknowledged as valid, with the aim of illustrating how a multi-layered approach can meet—and often exceed—the desired outcomes of consistency, maintainability, and ease of adoption.
+
+## 1. Strong Consistency and Brand Control
+
+### Strict Approach Argument
+
+A minimal set of officially sanctioned variants reduces the likelihood of brand drift. Developers can't stray from, say, a "primary" or "danger" style, which preserves a consistent look.
+
+### Layered Approach Response
+
+- **Shared Foundations**: By exposing a composable layer that relies on the same design tokens and accessibility standards, teams remain aligned with core brand guidelines—even if they assemble unique component variations.
+- **Recommended vs. Advanced**: The top-level API is still the default and easiest choice for most use cases (e.g., primary vs. danger), but a composable layer is available for the edge cases that strict variants can't cover.
+- **Reducing Untracked Overrides**: The black-box is never truly black. Without an official path, developers might use private or high-specificity CSS, or JS workarounds to achieve a requirement. This can cause more inconsistency than a well-documented composable path would.
+
+## 2. Reduced Complexity for Consumers
+
+### Strict Approach Argument
+
+Locking down components with a few props can be simpler for developers who aren't comfortable with advanced styling or utilities.
+
+### Layered Approach Response
+
+- **Two-Tiered Documentation**: The blessed top-level API remains straightforward (`<Button variant="primary" />`) and can fully serve developers who prefer minimal customization.
+- **Empowering Skilled Teams**: Some product teams will need deeper control. A layered system lets them customize without circumventing the design system's fundamentals.
+- **Catering to Diverse Skill Levels**: Large organizations typically host a range of front-end experience. A single locked-down model can be too restrictive for expert teams, yet a purely composable model might overwhelm beginners. Having both options means each team can work at the right level.
+
+## 3. Easier Theming and Version Upgrades
+
+### Strict Approach Argument
+
+If developers only use the official props and variants, it's easier to swap out internal implementations without risking breakage.
+
+### Layered Approach Response
+
+- **Stable Composable Contracts**: When the composable layer is official, developers rely on documented methods (e.g., hooks, sub-components), not private class names. This transparency mitigates unplanned breakage.
+- **Visibility into Usage**: Because the design system team knows how and where these primitives are used, they can plan major refactors more confidently—unlike hidden overrides that can surface unexpectedly.
+- **Community Contribution**: If a theming or markup change is needed, communication flows both ways: product teams share how they use the primitives, and maintainers can offer clear upgrade paths.
+
+## 4. Clearer Documentation and Discoverability
+
+### Strict Approach Argument
+
+A single set of props is easier to document and reference than a "deep dive" composable system.
+
+### Layered Approach Response
+
+- **Layered Documentation**
+  - **Top-Level ("Blessed")**: "Here's `<Button>`. We have variants: primary, danger, outline, etc." This remains concise.
+  - **Composable Layer**: "Here's `useButton()`, or `<ButtonPrimitive>` for advanced scenarios." This caters to teams with unique or evolving needs.
+- **Reducing Support Requests**: Officially documenting an advanced path means teams aren't left guessing or reverse-engineering internals when they need custom functionality.
+- **Guided Escape Hatch**: By explicitly describing how to "drop down a layer," you prevent confusion or accidental breakages. This method is more reliable than forcing developers to figure it out on their own.
+
+## 5. Prevents "Death by a Thousand Overrides"
+
+### Strict Approach Argument
+
+A composable system can lead to small, incremental overrides that eventually fragment the design.
+
+### Layered Approach Response
+
+- **Top-Level First**: The blessed, top-level API remains the quickest and easiest route for most developers. Because it's simpler and officially documented, many teams will stick with it unless their requirements truly fall outside the standard variants.
+- **Structured Customization**: Overrides already happen in real product work. A composable system makes it easier to maintain the design system's integrity by transforming ad-hoc modifications into a sanctioned, trackable process—still aligned with core design principles. Strict APIs don't actually prevent inconsistency; they just push inconsistency underground.
+- **Monitor & Promote**: Tracking usage of the composable layer can reveal recurring customizations. Strict approach overrides are often applied in ways that are effectively invisible in static analysis (`!important` in CSS, etc), while imports into the composable layer can easily be statically analyzable for data driven design system evolution. If certain patterns become popular, the design system can officially add them to the top-level API—reducing the need for further overrides.
+- **Incremental Evolution**: Locking everything down can freeze the system or push people outside it. A composable approach acknowledges real-world variation and incorporates it in a managed, iterative way.
+
+## 6. Easier for Non-CSS Experts to Contribute
+
+### Strict Approach Argument
+
+Back-end or full-stack developers might prefer a locked-down system that handles styling without their input.
+
+### Layered Approach Response
+
+- **Top-Level Sufficiency**: Such developers can stay within the standard variants (`<Button variant="primary" />`) and ignore deeper styling concerns.
+- **Advanced Layers for Skilled Teams**: The composable layer is optional, primarily used by those with front-end expertise. Non-experts need not engage with it unless they choose to.
+- **Development Flexibility**: This approach accommodates an organization's range of backgrounds, ensuring no team is forced into either an overly simple or overly complex workflow.
+
+## 7. Encourages Collaboration via a Design Feedback Loop
+
+### Strict Approach Argument
+
+By directing all new requirements through design system maintainers, you ensure proper validation and consistency.
+
+### Layered Approach Response
+
+- **Data-Driven Promotion**: In fast-paced environments, product teams often don't have time for formal requests or extended discussions to promote custom solutions back into the system. By observing actual usage and recurring patterns in the composable layer, design system maintainers can identify which adaptations warrant "official" status—without relying heavily on synchronous feedback loops or lengthy proposal processes. This makes the system's evolution more organic and less burdensome on busy teams.
+- **Avoiding Bottlenecks**: Requiring every design variation to be explicitly added by maintainers can stall urgent product needs. A composable approach lets teams move forward while still aligning with core brand and accessibility standards.
+- **Documented Customizations**: Because composable usage is official, you can see how teams extend or adapt components and decide if certain adaptations should become official variants.
+
+## 8. "We Already Provide Some Composability via Slots"
+
+### Strict Approach Argument
+
+Our components already include slots (or similar features) for injecting custom content, so we're effectively composable.
+
+### Layered Approach Response
+
+Many design systems evolve from "locked-down" props (or "knobs") to more "slot-based" designs. But even in a slot-based approach, you're often still constrained.
+
+- **Slots Are Partial**: Slots usually let developers insert child elements into predefined placeholders but don't allow deeper control over markup structure or internal logic.
+- **Limited State and Layout Control**: If your team needs to modify transitions, focus management, or fundamental layout, slots alone often aren't enough.
+- **True Composability Involves More**: A fully composable approach provides headless logic, consistent tokens, and detailed extension points so teams can assemble truly custom components—while retaining brand and accessibility guidelines.
+
+## Conclusion: Why a Layered Approach Excels
+
+- **Best of Both Worlds**: The top-level "blessed" API offers simplicity for common scenarios, while the composable layer supports advanced cases and evolving product demands.
+- **Consistent Foundations**: Even custom assemblies rely on shared tokens and proven accessibility patterns, sustaining brand alignment and UX quality.
+- **Adaptable & Organized**: Officially documenting both layers and their usage helps avoid unapproved or unknown overrides, reducing confusion and support overhead.
+- **Reduced Strain on Design System Maintainers**: By offering a self-service composable layer, the design system team no longer has to implement every minor variant request themselves. They can focus on strategic improvements—like refining documentation, tokens, or accessibility—while teams with specialized needs handle customizations within approved boundaries.
+- **Accelerated Innovation**: Teams can meet urgent or specialized requirements without waiting for official variants, yet still remain within the design system's strategic guardrails.
+- **Continuous Improvement**: Insights from how teams use the composable layer feed back into the system's evolution. This process strengthens, rather than weakens, the design system over time.
+
+A layered, composable design system can deliver the consistency, clarity, and maintainability that strict lock-down strategies strive for—and it does so with an added ability to adapt and scale in complex, fast-paced product environments.
+
+## Concrete Example: Adobe's React Spectrum
+
+A well-known illustration of this layered architecture comes from Adobe's React Spectrum ecosystem, which builds upon successive layers of functionality and styling:
+
+**Top-Level (Blessed) API Surface: React Spectrum**
+Provides fully styled, feature-rich components—with default behaviors and presentation similar to a traditional, locked-down design system.
+
+**Composable Layers**
+- **React Aria Components**: Unstyled or lightly styled components that offer accessible markup patterns and core behaviors.
+- **React Aria**: A set of behavioral hooks returning props and event handlers for building interactions—without imposing any markup or visual design.
+- **React Stately**: Hooks that manage state logic for various UI paradigms, decoupling it from both markup, behavior, and styling.
+
+This structure allows developers to adopt the top-level, out-of-the-box UI components or drop down to lower-level primitives when specialized customization is required—ensuring both consistency and flexibility in one ecosystem.
+
+### Building on Proven Foundations
+
+There's significant value in choosing a battle-tested, open-source layered design system as your foundation—adding your own styling and branding on top. Widely adopted libraries offer advantages beyond their technical merits: they exist in the training data of modern AI coding assistants. This means developers working with established systems like React Aria receive better autocomplete suggestions, more accurate refactoring assistance, and clearer documentation lookups than teams using proprietary, in-house systems.
+
+As AI-assisted development becomes increasingly common, this consideration grows more important. A design system built on familiar patterns and well-documented APIs will be more accessible to both human developers and the AI tools that support them.
+
+## The Role of Organizational Culture
+
+Strictness is ultimately shaped by organizational culture more than technology alone. Even the most rigid design system won't guarantee consistent usage if code reviews, lint rules, or leadership support aren't there to reinforce it. Conversely, a well-documented, composable system—with clear guidelines and team buy-in—can maintain a high degree of uniformity. In other words, the success of any design system depends at least as much on people and processes as it does on technical constraints.
