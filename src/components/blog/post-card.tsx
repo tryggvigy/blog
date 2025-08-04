@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import { formatDate } from '@/lib/utils';
-import type { BlogPost } from '@/lib/types';
+import type { ListingBlogPost } from '@/lib/types';
 
 interface PostCardProps {
-  post: BlogPost;
+  post: ListingBlogPost;
 }
 
 export default function PostCard({ post }: PostCardProps) {
@@ -17,12 +16,6 @@ export default function PostCard({ post }: PostCardProps) {
           {post.frontmatter.description}
         </p>
         <div className="flex items-center justify-between text-sm text-text-muted">
-          <div className="flex items-center space-x-4">
-            <time dateTime={post.frontmatter.date}>
-              {formatDate(post.frontmatter.date)}
-            </time>
-            <span>{post.readingTime}</span>
-          </div>
           <div className="flex flex-wrap gap-2">
             {post.frontmatter.tags.slice(0, 3).map((tag) => (
               <span

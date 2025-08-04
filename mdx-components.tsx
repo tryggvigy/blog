@@ -72,6 +72,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       // For code blocks, we let the CodeBlock component handle the styling
       if (
         React.isValidElement(children) &&
+        // @ts-expect-error - children.props is not typed
         children.props?.className?.startsWith('language-')
       ) {
         return children;

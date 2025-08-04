@@ -8,7 +8,6 @@ A minimalist personal blog built with Next.js 15, React Server Components, Tailw
 - **React Server Components** for optimal performance
 - **Tailwind CSS 4** for styling
 - **MDX** for content with file-system based routing
-- **MongoDB** for analytics and view tracking
 - **Shiki** for syntax highlighting
 - **TypeScript** for type safety
 
@@ -39,6 +38,7 @@ src/
 
 1. Create a new directory under `src/app/blog/`
 2. Add a `page.mdx` file with frontmatter:
+
    ```mdx
    export const postMetadata = {
      title: 'Your Post Title',
@@ -48,11 +48,12 @@ src/
      tags: ['tag1', 'tag2'],
      published: true,
    };
-   
+
    # Your Post Title
-   
+
    Your content here...
    ```
+
 3. Update `src/lib/mdx.ts` to import and include the new post
 
 ## Development
@@ -87,6 +88,7 @@ npm run lint
 ## MDX Configuration
 
 The blog uses custom MDX components defined in `mdx-components.tsx` for:
+
 - Styled headings with anchor links
 - Code blocks with syntax highlighting
 - Custom typography and spacing
