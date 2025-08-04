@@ -1,13 +1,29 @@
----
-title: "Getting Started with Next.js 15: A Comprehensive Guide"
-description: "Learn how to build modern web applications with Next.js 15, featuring the App Router, Server Components, and the latest React features."
-date: "2024-01-15"
-author: "Tech Blogger"
-tags: ["nextjs", "react", "web-development", "tutorial"]
-published: true
----
+import { PostHeader } from '@/components/blog/post-header';
 
-# Getting Started with Next.js 15: A Comprehensive Guide
+export const postMetadata = {
+  title: 'Getting Started with Next.js 15: A Comprehensive Guide',
+  description:
+    'Learn how to build modern web applications with Next.js 15, featuring the App Router, Server Components, and the latest React features.',
+  date: '2024-01-15',
+  author: 'Tech Blogger',
+  tags: ['nextjs', 'react', 'web-development', 'tutorial'],
+  published: true,
+};
+
+export const metadata = {
+  title: postMetadata.title,
+  description: postMetadata.description,
+  openGraph: {
+    title: postMetadata.title,
+    description: postMetadata.description,
+    type: 'article',
+    publishedTime: postMetadata.date,
+    authors: [postMetadata.author],
+    tags: postMetadata.tags,
+  },
+};
+
+<PostHeader {...postMetadata} />
 
 Next.js has revolutionized the way we build React applications, and with the release of Next.js 15, the framework continues to push the boundaries of what's possible with modern web development. In this comprehensive guide, we'll explore the key features and improvements that make Next.js 15 a game-changer for developers.
 
@@ -27,7 +43,7 @@ The App Router, introduced in Next.js 13, has been further refined in version 15
 
 Next.js 15 fully embraces React 19 features:
 
-```jsx
+```tsx
 // Server Components by default
 export default function HomePage() {
   return (
@@ -35,7 +51,7 @@ export default function HomePage() {
       <h1>Welcome to Next.js 15</h1>
       <p>Built with React 19 Server Components</p>
     </div>
-  )
+  );
 }
 ```
 
@@ -58,6 +74,7 @@ npm run dev
 ```
 
 This creates a project with:
+
 - TypeScript support out of the box
 - Tailwind CSS integration
 - ESLint configuration
@@ -111,4 +128,4 @@ Whether you're building a simple blog or a complex enterprise application, Next.
 
 ---
 
-*Ready to start your Next.js journey? Check out the [official documentation](https://nextjs.org/docs) for more detailed information and examples.*
+_Ready to start your Next.js journey? Check out the [official documentation](https://nextjs.org/docs) for more detailed information and examples._
