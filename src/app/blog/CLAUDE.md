@@ -1,5 +1,41 @@
 This is a directory of `.mdx` files that represent the blog posts.
 
+## Instructions
+
+Start every blog post with this:
+
+```mdx
+import { PostHeader } from '@/components/blog/post-header';
+
+export const postMetadata = {
+  slug: 'post-slug',
+  title: 'Post Title',
+  description: 'Post description',
+  date: 'YYYY-MM-DD',
+  author: 'Tryggvi Gylfason',
+  tags: ['tag1', 'tag2', 'tag3'],
+  published: true,
+};
+
+export const metadata = {
+  title: postMetadata.title,
+  description: postMetadata.description,
+  openGraph: {
+    title: postMetadata.title,
+    description: postMetadata.description,
+    type: 'article',
+    publishedTime: postMetadata.date,
+    authors: [postMetadata.author],
+    tags: postMetadata.tags,
+  },
+};
+
+<PostHeader {...postMetadata} />
+```
+
+Where postMetadata is the frontmatter of the post and satisfies the Frontmatter type.
+Fill in the frontmatter with the correct values.
+
 IMPORTANT:
 
 - NEVER use en dashes, or em dashes
