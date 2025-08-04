@@ -1,11 +1,8 @@
 import type { ListingBlogPost } from './types';
-import { postMetadata as nextjsMeta } from '@/app/blog/getting-started-with-nextjs/page.mdx';
+import { postMetadata as cssLayerOrderMeta } from '@/app/blog/css-layer-order-misconception/page.mdx';
 import { postMetadata as post2Meta } from '@/app/blog/post2/page.mdx';
 
-const allPosts = [
-  { slug: 'post2', metadata: post2Meta },
-  { slug: 'getting-started-with-nextjs', metadata: nextjsMeta },
-];
+const allPosts = [{ metadata: post2Meta }, { metadata: cssLayerOrderMeta }];
 
 // Import all posts dynamically - this will need to be updated when adding new posts
 export async function getAllPosts(): Promise<ListingBlogPost[]> {
@@ -13,10 +10,10 @@ export async function getAllPosts(): Promise<ListingBlogPost[]> {
 
   try {
     // Filter published posts and create BlogPost objects
-    allPosts.forEach(({ slug, metadata }) => {
+    allPosts.forEach(({ metadata }) => {
       if (metadata.published !== false) {
         posts.push({
-          slug,
+          slug: metadata.slug,
           frontmatter: metadata,
         });
       }
