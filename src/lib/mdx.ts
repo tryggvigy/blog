@@ -1,36 +1,23 @@
-import type { BlogPost } from './types';
+import type { ListingBlogPost } from './types';
+import { postMetadata as nextjsMeta } from '@/app/blog/getting-started-with-nextjs/page.mdx';
+import { postMetadata as post2Meta } from '@/app/blog/post2/page.mdx';
+
+const allPosts = [
+  { slug: 'post2', metadata: post2Meta },
+  { slug: 'getting-started-with-nextjs', metadata: nextjsMeta },
+];
 
 // Import all posts dynamically - this will need to be updated when adding new posts
-export async function getAllPosts(): Promise<BlogPost[]> {
-  const posts: BlogPost[] = [];
+export async function getAllPosts(): Promise<ListingBlogPost[]> {
+  const posts: ListingBlogPost[] = [];
 
   try {
-    // Import post metadata from each MDX file
-    const { postMetadata: post2Meta } = await import(
-      '@/app/blog/post2/page.mdx'
-    );
-    const { postMetadata: nextjsMeta } = await import(
-      '@/app/blog/getting-started-with-nextjs/page.mdx'
-    );
-    const { postMetadata: testMeta } = await import(
-      '@/app/blog/test-plugins/page.mdx'
-    );
-
-    // Add all posts
-    const allPosts = [
-      { slug: 'post2', metadata: post2Meta },
-      { slug: 'getting-started-with-nextjs', metadata: nextjsMeta },
-      { slug: 'test-plugins', metadata: testMeta },
-    ];
-
     // Filter published posts and create BlogPost objects
     allPosts.forEach(({ slug, metadata }) => {
       if (metadata.published !== false) {
         posts.push({
           slug,
           frontmatter: metadata,
-          content: '', // We don't need content for listing
-          readingTime: '3 min read', // Could calculate this if needed
         });
       }
     });
@@ -60,7 +47,7 @@ export async function getAllTags(): Promise<string[]> {
   return Array.from(tags).sort();
 }
 
-export async function searchPosts(query: string): Promise<BlogPost[]> {
+export async function searchPosts(query: string): Promise<ListingBlogPost[]> {
   const posts = await getAllPosts();
   const lowercaseQuery = query.toLowerCase();
 

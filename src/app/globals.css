@@ -3,6 +3,7 @@
 :root {
   /* Dark theme by default */
   --background: #0a0a0a;
+  --background-highlight: #4c4c4c;
   --foreground: #ededed;
 
   /* Semantic colors for dark theme */
@@ -15,9 +16,9 @@
   --text-secondary: #a3a3a3;
   --text-muted: #737373;
 
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-light: #1e40af;
+  --accent: #fbbf24;
+  --accent-hover: #f59e0b;
+  --accent-light: #d97706;
 
   --code-bg: #111111;
   --code-border: #333333;
@@ -52,4 +53,15 @@ body {
 
 pre {
   padding: 0.5rem 1rem;
+}
+
+p a {
+  color: var(--accent);
+}
+
+.line.highlighted {
+  border-inline-start: 4px solid var(--accent);
+  padding-inline: 4px 2px;
+  margin-inline-start: -8px;
+  background-color: var(--background-highlight);
 }

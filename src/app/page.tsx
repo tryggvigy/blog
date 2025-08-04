@@ -1,52 +1,43 @@
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/mdx';
-import PostCard from '@/components/blog/post-card';
+import { formatDate } from '@/lib/utils';
+
+export const metadata = {
+  title: 'Tech Blog',
+  description:
+    'Browse all blog posts about web development, programming, and technology',
+};
 
 export default async function Home() {
-  const posts = (await getAllPosts()).slice(0, 3);
+  const posts = await getAllPosts();
+
+  if (posts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-text-secondary mb-4">No posts available yet.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-text-primary mb-4">
-          Welcome to Tech Blog
-        </h1>
-        <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-          Exploring web development, programming, and technology insights.
-        </p>
+      <div className="space-y-8">
+        {posts.map((post) => (
+          <article key={post.slug} className="border-b border-border pb-8">
+            <Link href={`/blog/${post.slug}`} className="block group">
+              <h2 className="text-2xl font-semibold text-text-primary mb-2 group-hover:text-accent transition-colors">
+                {post.frontmatter.title}
+              </h2>
+              <p className="text-text-secondary mb-3">
+                {post.frontmatter.description}
+              </p>
+              <time className="text-sm text-text-muted" dateTime={post.frontmatter.date}>
+                {formatDate(post.frontmatter.date)}
+              </time>
+            </Link>
+          </article>
+        ))}
       </div>
-
-      <section className="mb-12">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-semibold text-text-primary">
-            Recent Posts
-          </h2>
-          <Link
-            href="/blog"
-            className="text-accent hover:text-accent-hover font-medium"
-          >
-            View all posts →
-          </Link>
-        </div>
-
-        {posts.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <PostCard key={post.slug} post={post} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-text-secondary mb-4">
-              No posts yet. Check back soon!
-            </p>
-            <p className="text-sm text-text-muted">
-              Posts will appear here once you add MDX files to the content/posts
-              directory.
-            </p>
-          </div>
-        )}
-      </section>
     </div>
   );
 }

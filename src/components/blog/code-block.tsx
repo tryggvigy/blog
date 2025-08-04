@@ -1,17 +1,20 @@
 import { codeToHtml } from 'shiki';
+import { transformerNotationHighlight } from '@shikijs/transformers';
 
 interface CodeBlockProps {
   children: string;
   className?: string;
+  lang?: string;
 }
 
-export async function CodeBlock({ children, className }: CodeBlockProps) {
+export async function CodeBlock({ children, className, lang }: CodeBlockProps) {
   // Extract language from className (e.g., "language-typescript" -> "typescript")
-  const language = className?.replace('language-', '') || 'text';
+  const language = lang || className?.replace('language-', '') || 'text';
 
   const html = await codeToHtml(children.trim(), {
     lang: language,
-    theme: 'github-dark',
+    theme: 'tokyo-night',
+    transformers: [transformerNotationHighlight()],
   });
 
   return <div dangerouslySetInnerHTML={{ __html: html }} />;

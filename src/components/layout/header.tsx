@@ -17,13 +17,13 @@ export default function Header() {
               href="/"
               className="text-text-secondary hover:text-text-primary transition-colors"
             >
-              Home
+              Blog
             </Link>
             <Link
-              href="/blog"
+              href="/about"
               className="text-text-secondary hover:text-text-primary transition-colors"
             >
-              Blog
+              About
             </Link>
           </nav>
         </div>

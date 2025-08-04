@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
         description: post.frontmatter.description,
         date: post.frontmatter.date,
         tags: post.frontmatter.tags,
-        readingTime: post.readingTime,
       })),
     });
   } catch (error) {
