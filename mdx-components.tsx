@@ -12,7 +12,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ol: ({ children }) => <ol className="mb-4 list-decimal list-inside">{children}</ol>,
     li: ({ children }) => <li className="mb-1">{children}</li>,
     blockquote: ({ children }) => (
-      <blockquote className="border-l-4 border-blue-500 pl-4 my-4 italic">{children}</blockquote>
+      <blockquote className="border-l-4 border-accent pl-4 my-4 italic text-text-secondary">{children}</blockquote>
     ),
     code: ({ children, className }: { children: React.ReactNode; className?: string }) => {
       // Check if this is a code block (inside a pre tag) or inline code
@@ -28,7 +28,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       }
       // Fallback for other pre content
       return (
-        <pre className="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto my-4">{children}</pre>
+        <pre className="bg-code-bg text-text-primary p-4 rounded-lg border border-code-border overflow-x-auto my-4">{children}</pre>
       )
     },
     ...components,

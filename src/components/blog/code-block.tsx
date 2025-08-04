@@ -20,7 +20,7 @@ export async function CodeBlock({ children, className }: CodeBlockProps) {
 // Sync version for inline code
 export function InlineCode({ children }: { children: React.ReactNode }) {
   return (
-    <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm">
+    <code className="bg-inline-code-bg px-1 py-0.5 rounded text-sm border border-border-subtle">
       {children}
     </code>
   )

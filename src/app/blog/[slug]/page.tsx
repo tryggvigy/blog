@@ -45,11 +45,11 @@ function BlogPostPageInner({ post }: { post: BlogPost }) {
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold text-text-primary mb-4">
           {post.frontmatter.title}
         </h1>
 
-        <div className="flex items-center text-gray-600 text-sm mb-4">
+        <div className="flex items-center text-text-secondary text-sm mb-4">
           <time dateTime={post.frontmatter.date}>
             {formatDate(post.frontmatter.date)}
           </time>
@@ -59,7 +59,7 @@ function BlogPostPageInner({ post }: { post: BlogPost }) {
           <span>by {post.frontmatter.author}</span>
         </div>
 
-        <p className="text-xl text-gray-600 mb-6">
+        <p className="text-xl text-text-secondary mb-6">
           {post.frontmatter.description}
         </p>
 
@@ -67,7 +67,7 @@ function BlogPostPageInner({ post }: { post: BlogPost }) {
           {post.frontmatter.tags.map(tag => (
             <span
               key={tag}
-              className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+              className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent-light text-text-primary"
             >
               {tag}
             </span>
