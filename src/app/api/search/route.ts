@@ -20,10 +20,10 @@ export async function GET(request: NextRequest) {
       query,
       results: results.map((post) => ({
         slug: post.slug,
-        title: post.frontmatter.title,
-        description: post.frontmatter.description,
-        date: post.frontmatter.date,
-        tags: post.frontmatter.tags,
+        title: post.title,
+        description: post.description,
+        date: post.date,
+        tags: post.tags,
       })),
     });
   } catch (error) {

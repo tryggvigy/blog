@@ -2,12 +2,20 @@ import { PostHeader } from '@/components/blog/post-header';
 
 export const postMetadata = {
   slug: 'css-layer-order-misconception',
-  title: "Why CSS @layer Declarations Don't Work Like You Think",
+  title:
+    "Why CSS @layer Declarations Don't Work Like You Think",
   description:
     'A deep dive into the core conflict between CSS source order and module bundlers, and why your @layer declarations might not behave the way you think.',
   date: '2025-08-04',
   author: 'Tryggvi Gylfason',
-  tags: ['css', 'cascade-layers', 'web-development', 'bundlers', 'webpack', 'vite'],
+  tags: [
+    'css',
+    'cascade-layers',
+    'web-development',
+    'bundlers',
+    'webpack',
+    'vite',
+  ],
   published: true,
 };
 
@@ -26,7 +34,7 @@ export const metadata = {
 
 <PostHeader {...postMetadata} />
 
-Modern CSS introduces powerful new tools like `@layer` to manage style precedence in a more explicit, maintainable way. But there's a common misunderstanding about how `@layer` ordering works — one that can cause subtle bugs if you're not careful.
+Modern CSS introduces powerful new tools like `@layer` to manage style precedence in a more explicit, maintainable way. But there's a common misunderstanding about how `@layer` ordering works, one that can cause subtle bugs if you're not careful.
 
 This post explains the **fundamental conflict** between CSS and bundlers, and clarifies what **does** and **does not** work when using `@layer` for controlling cascade order.
 
@@ -36,7 +44,7 @@ This post explains the **fundamental conflict** between CSS and bundlers, and cl
 
 In CSS, source order matters. When two rules have the same specificity, **the later one wins**.
 
-But modern build systems (like Webpack, Vite, etc.) don't operate in a simple linear fashion. They build a **graph of modules**, starting from a root, and flatten it into a bundle. Unfortunately, there’s **no canonical way** to flatten a graph into a correct CSS order — especially when:
+But modern build systems (like Webpack, Vite, etc.) don't operate in a simple linear fashion. They build a **graph of modules**, starting from a root, and flatten it into a bundle. Unfortunately, there’s **no canonical way** to flatten a graph into a correct CSS order, especially when:
 
 - CSS is imported from multiple JS modules
 - There are shared dependencies or dynamic imports
@@ -52,7 +60,6 @@ The result? Inconsistent source order between environments and subtle cascade bu
 
 CSS Cascade Layers (`@layer`) were designed to solve this problem by giving you explicit control over the order of style blocks.
 In other words, layers allow us to overlay a programmable linear order on top of whatever graph flattening occurs.
-
 
 You can assign your styles to named layers like so:
 
@@ -80,7 +87,7 @@ This gives you explicit control over cascade precedence, regardless of how your 
 
 ---
 
-## The Misconception: Can You Declare Layer Order *After* the Layers?
+## The Misconception: Can You Declare Layer Order _After_ the Layers?
 
 Many developers assume that declaring:
 
@@ -88,7 +95,7 @@ Many developers assume that declaring:
 @layer reset, component, override;
 ```
 
-will retroactively set the order of those layers — even if some were already defined earlier. It feels intuitive, especially if you're used to declarative programming patterns.
+will retroactively set the order of those layers, even if some were already defined earlier. It feels intuitive, especially if you're used to declarative programming patterns.
 
 Here's a minimal example that seems like it should work:
 
@@ -114,7 +121,7 @@ reset → component → override
 component → reset → override
 ```
 
-Why? Because the browser encounters the `component` layer first and locks in its position at that point in the cascade. When it later sees `reset, component, override`, it uses that list only to determine the order of any *new* layers it hasn't already seen. It does **not** reshuffle layers that have already been encountered.
+Why? Because the browser encounters the `component` layer first and locks in its position at that point in the cascade. When it later sees `reset, component, override`, it uses that list only to determine the order of any _new_ layers it hasn't already seen. It does **not** reshuffle layers that have already been encountered.
 
 ---
 
@@ -132,7 +139,7 @@ So:
 1. **The first mention of a layer name fixes its position** in the cascade
 2. **Later declarations cannot move it**, even if they include that layer name in a list
 
-This behavior is designed to be predictable — once you've seen a layer, its position is locked.
+This behavior is designed to be predictable. Once you've seen a layer, its position is locked.
 
 ---
 
@@ -169,7 +176,7 @@ Now the browser sees the layer names in the right order from the start:
 reset → component → override ✅
 ```
 
-The content can be defined in any order afterward — the cascade precedence is already established.
+The content can be defined in any order afterward, the cascade precedence is already established.
 
 ---
 
@@ -208,9 +215,9 @@ Result: Your utility classes work, but any reset styles you add later will overr
 
 ## The Hidden Limitation: Unlayered CSS Usually Wins
 
-Here's another important gotcha that can limit the usefulness of layers: **unlayered CSS has higher specificity than layered CSS** — but this behavior changes with `!important`.
+Here's another important gotcha that can limit the usefulness of layers: **unlayered CSS has higher specificity than layered CSS**, but this behavior changes with `!important`.
 
-This behavior exists for [**backwards compatibility**](https://gustawdaniel.com/posts/en/how-the-compatibility-war-shaped-frontend) — existing stylesheets should continue to work when layers are introduced to a project.
+This behavior exists for [**backwards compatibility**](https://gustawdaniel.com/posts/en/how-the-compatibility-war-shaped-frontend), existing stylesheets should continue to work when layers are introduced to a project.
 
 ### Normal (non-!important) Rules
 
@@ -242,7 +249,7 @@ With `!important`, the cascade **inverts**:
   }
 }
 
-  /* This loses, even though it's unlayered */
+/* This loses, even though it's unlayered */
 .btn {
   background: red !important;
 }
@@ -304,15 +311,18 @@ If you're using PostCSS or similar, you can automate this:
 // postcss.config.js
 module.exports = {
   plugins: [
-    ['postcss-import', {
-      path: ['./src/styles'],
-      plugins: [
-        // Ensure layer declarations come first
-      ]
-    }],
+    [
+      'postcss-import',
+      {
+        path: ['./src/styles'],
+        plugins: [
+          // Ensure layer declarations come first
+        ],
+      },
+    ],
     // ... other plugins
-  ]
-}
+  ],
+};
 ```
 
 ### 3. Document Your Layer Strategy

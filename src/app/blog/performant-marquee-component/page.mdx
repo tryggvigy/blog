@@ -1,0 +1,342 @@
+import { PostHeader } from '@/components/blog/post-header';
+
+export const postMetadata = {
+  slug: 'performant-marquee-component',
+  title: 'Building a Performant Marquee Component for the Web',
+  description:
+    'Learn how to create a smooth, accessible marquee component that respects user preferences and handles complex text layouts.',
+  date: '2025-08-06',
+  author: 'Tryggvi Gylfason',
+  tags: ['react', 'animation', 'performance', 'accessibility'],
+  published: true,
+};
+
+export const metadata = {
+  title: postMetadata.title,
+  description: postMetadata.description,
+  openGraph: {
+    title: postMetadata.title,
+    description: postMetadata.description,
+    type: 'article',
+    publishedTime: postMetadata.date,
+    authors: [postMetadata.author],
+    tags: postMetadata.tags,
+  },
+};
+
+<PostHeader {...postMetadata} />
+
+# Building a Performant Marquee Component for the Web
+
+Marquee text effects have a complicated legacy in web development. Once ubiquitous through the native [`<marquee>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/marquee) HTML tag introduced by Microsoft in the 1990s, they've since fallen out of favor and been deprecated due to serious accessibility concerns—constantly moving text can be distracting, difficult to read, and problematic for users with cognitive disabilities or photosensitive epilepsy. The original tag was never part of any HTML standard and was criticized for blending presentation with structure.
+
+However, marquees haven't disappeared entirely. In specific, well-considered contexts—like music players displaying long song titles or dashboard widgets showing overflowing content—they can solve real UI problems when implemented thoughtfully. The key difference is modern implementations can respect user preferences, provide controls, and follow accessibility guidelines. While CSS has made animations more accessible, creating a truly robust marquee component requires careful consideration of performance, accessibility, and edge cases.
+
+In this post, I'll walk through building a production-ready marquee component that handles RTL text, respects reduced motion preferences, and maintains consistent animation speeds across container size changes.
+
+## The Core Challenge
+
+The fundamental challenge of a marquee component is determining when content overflows and then animating it smoothly. Most implementations fall short because they:
+
+- Don't handle dynamic content or container resizing
+- Ignore accessibility preferences
+- Break with RTL text layouts
+- Have inconsistent animation speeds
+- **Most critically: they're performance disasters**
+
+The worst offenders continuously update CSS custom properties or transform values every frame, forcing the browser to recalculate styles and repaint constantly. Some fall into the [custom property animation trap](https://www.bram.us/2023/02/01/the-gotcha-with-animating-custom-properties/) where animations don't run on the compositor thread.
+
+Let's build something that measures once and then gets out of the way.
+
+## Setting Up the Foundation
+
+Our marquee component needs to track several key measurements:
+
+```jsx
+function MarqueeInner({ title, children }) {
+  // Ref to the container element that has overflow: hidden.
+  const marqueeScrollportRef = useRef(null);
+  // Ref to the inner marquee element that has text-wrap: nowrap.
+  const marqueeRef = useRef(null);
+  // Ref to the Web Animations API object.
+  const animationRef = useRef(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const moveDistance = useRef(0);
+
+  const getMoveDistance = useCallback(() => {
+    if (!marqueeRef.current || !marqueeScrollportRef.current) {
+      return 0;
+    }
+
+    const textWidth = marqueeRef.current.getBoundingClientRect().width;
+    const containerWidth =
+      marqueeScrollportRef.current.getBoundingClientRect().width;
+
+    if (textWidth === 0 || containerWidth === 0) {
+      return 0; // Prevent division by zero during initial render
+    }
+
+    return Math.max(textWidth - containerWidth, 0);
+  }, []);
+}
+```
+
+The `getMoveDistance` function calculates how far the text needs to move to reveal all hidden content. We use `getBoundingClientRect()` for accurate measurements that account for padding, borders, and transforms.
+
+## The Performance Strategy: Measure Once, Animate Forever
+
+Here's the key insight that makes this marquee performant: **we measure the dimensions once, calculate the animation distance, and then create a hardware-accelerated CSS animation that runs entirely on the compositor thread**.
+
+Most marquee implementations get this wrong. They either:
+
+1. **Update a CSS custom property every frame** - This forces style recalculation on every animation frame
+2. **Continuously modify transform values in JavaScript** - This blocks the main thread and prevents compositor optimization
+3. **Use `setInterval` or `requestAnimationFrame` to update positions** - The main thread becomes a bottleneck
+
+Our approach is different. We calculate the exact distance the text needs to travel, then create a single CSS animation using the Web Animations API with `translateX`. The browser can then:
+
+- Run the animation on the compositor thread (GPU)
+- Avoid main thread involvement during animation
+- Use hardware acceleration for smooth 60fps movement
+- Continue animating even if JavaScript is blocked
+
+The only time we touch the main thread is during resize events, where we dynamically adjust the animation's playback rate to maintain consistent visual speed. But the animation itself? Pure compositor magic.
+
+## Handling Responsive Behavior
+
+One of the trickiest aspects is maintaining consistent animation speed when the container resizes. We solve this using a resize observer and dynamic playback rate adjustment:
+
+```jsx
+// Any ResizeObserver will do, we've wrapped it in a hook for
+// convenience.
+useResizeObserver({
+  refOrElement: marqueeScrollportRef,
+  observeOnly: 'width',
+  observeOnMount: true,
+  onResize: ({ width }) => {
+    marqueeRef.current?.style.setProperty('--marquee-width', `${width}px`);
+
+    const newMoveDistance = getMoveDistance();
+    setIsOverflowing(newMoveDistance > 0);
+
+    if (!animationRef.current || newMoveDistance === 0) {
+      return;
+    }
+
+    // Maintain visual speed by adjusting playback rate
+    animationRef.current.updatePlaybackRate(
+      moveDistance.current / newMoveDistance
+    );
+  },
+});
+```
+
+The key insight here is using `updatePlaybackRate()` to maintain consistent visual speed. When the container shrinks, we need the animation to slow down proportionally to keep the same pixels-per-second movement.
+
+## Creating the Animation Loop
+
+The animation itself uses the Web Animations API for precise control:
+
+```jsx
+function getDuration(width) {
+  // Movement duration based on 12px/s for consistent speed
+  return (width / 12) * 1000;
+}
+
+async function loopAnimation({ autoPlay, direction }) {
+  if (!marqueeRef.current || !marqueeScrollportRef.current) return;
+
+  animationRef.current?.cancel();
+  moveDistance.current = getMoveDistance();
+  const duration = getDuration(moveDistance.current);
+
+  let keyframes = [
+    { transform: 'translateX(0)' },
+    {
+      transform: `translateX(min(calc(var(--marquee-width) - 100%), 0px))`,
+    },
+  ];
+
+  // Handle RTL text by reversing keyframes
+  if (isTextRtl()) {
+    keyframes = keyframes.reverse();
+  }
+
+  animationRef.current = marqueeRef.current.animate(keyframes, {
+    duration,
+    iterations: 1,
+    direction,
+    fill: 'both',
+    easing: 'linear',
+  });
+
+  animationRef.current.pause();
+
+  if (autoPlay) {
+    // Wait 1 second before starting
+    await wait(1000);
+    if (!queuedUserPause.current) {
+      animationRef.current?.play();
+    }
+  }
+
+  try {
+    await animationRef.current.finished;
+
+    // Reverse direction and continue.
+    // We reuse the same animation object for the next loop.
+    const nextDirection = direction === 'normal' ? 'reverse' : 'normal';
+    loopAnimation({
+      direction: nextDirection,
+      autoPlay: nextDirection === 'reverse',
+    });
+  } catch {
+    // Animation was cancelled
+  }
+}
+```
+
+Notice how we handle RTL text by detecting the computed direction and reversing the keyframes accordingly. This ensures the animation direction feels natural for all text layouts.
+
+## Accessibility and User Preferences
+
+Respecting user preferences is crucial for a good marquee component:
+
+```jsx
+const prefersReducedMotion = usePrefersReducedMotion();
+
+useEffect(() => {
+  if (
+    !element ||
+    // [!code highlight:1]
+    prefersReducedMotion ||
+    !isOverflowing
+  ) {
+    return () => {};
+  }
+
+  loopAnimation({
+    direction: 'normal',
+    autoPlay: isFirstAnimationLoop.current,
+  });
+
+  isFirstAnimationLoop.current = false;
+
+  return () => {
+    animationRef.current?.cancel();
+    animationRef.current = null;
+  };
+}, [prefersReducedMotion, isOverflowing]);
+```
+
+We completely disable the animation when users prefer reduced motion, and we provide hover/focus controls to pause the animation:
+
+```jsx
+const pauseAnimation = useCallback(() => {
+  queuedUserPause.current = true;
+  animationRef.current?.pause();
+}, []);
+
+const playAnimation = useCallback(() => {
+  queuedUserPause.current = false;
+  animationRef.current?.play();
+}, []);
+
+return (
+  <div
+    onPointerEnter={pauseAnimation}
+    onPointerLeave={playAnimation}
+    onFocus={pauseAnimation}
+    onBlur={playAnimation}
+  >
+    {/* marquee content */}
+  </div>
+);
+```
+
+## Styling with CSS Custom Properties
+
+The CSS leverages custom properties for dynamic values and creates a subtle fade effect:
+
+```scss
+@property --marquee-width {
+  syntax: '<length>';
+  initial-value: 0;
+  inherits: false;
+}
+
+.container {
+  overflow: hidden;
+  // Compensate for inner padding
+  margin-inline-start: -6px;
+}
+
+.marquee {
+  text-wrap: nowrap;
+  white-space: nowrap;
+  display: flex;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 6px,
+    #000 calc(100% - 6px),
+    transparent 100%
+  );
+}
+
+.inner {
+  padding-inline: 6px;
+  white-space: nowrap;
+  display: flex;
+}
+```
+
+The `mask-image` creates a subtle fade at the edges, giving users a visual cue that content extends beyond the visible area.
+
+## Performance Considerations
+
+The core performance win is **measure once, animate on the compositor**. But several additional optimizations compound this benefit:
+
+1. **Hardware Acceleration by Default**: Using `translateX` instead of updating `left` or CSS custom properties ensures the animation runs on the GPU
+2. **Zero Main Thread Involvement**: Once the animation starts, JavaScript doesn't touch it until resize events
+3. **Resize Observer Throttling**: We only observe width changes, ignoring height
+4. **Animation Reuse**: The Web Animations API reuses the same animation object when possible
+5. **Early Returns**: We bail out early when measurements are zero or invalid
+6. **Ref-based State**: Critical animation state uses refs to avoid unnecessary re-renders
+
+Note that we do use a CSS custom property (`--marquee-width`) in our keyframes, but we're not animating it. We set it once during resize and use it as a static value in our transform calculation. This avoids the [custom property animation gotcha](https://www.bram.us/2023/02/01/the-gotcha-with-animating-custom-properties/) where animating custom properties forces main thread involvement.
+
+## Putting It All Together
+
+The final component provides a clean API while handling all the complexity internally:
+
+```jsx
+export function Marquee({ title, children }) {
+  if (!title || !children) {
+    return null;
+  }
+
+  return <MarqueeInner title={title} children={children} />;
+}
+```
+
+Usage is straightforward:
+
+```jsx
+<Marquee title="Very long song title that will overflow">
+  <Text>Very long song title that will overflow</Text>
+</Marquee>
+```
+
+## Key Takeaways
+
+Building a robust marquee component teaches us several important lessons:
+
+- **Measure twice, animate once**: Accurate measurements are critical for smooth animations
+- **Respect user preferences**: Always check for `prefers-reduced-motion`
+- **Handle edge cases**: RTL text, resizing, and zero-width containers all need consideration
+- **Use the platform**: The Web Animations API provides powerful tools for complex animations
+
+The result is a marquee component that feels native, respects accessibility, and performs well across different devices and text layouts. While the implementation is complex, the abstraction provides a simple, reliable interface for developers.
+
+This approach can be extended to other animation scenarios where content needs to adapt dynamically to container changes while maintaining consistent visual behavior.

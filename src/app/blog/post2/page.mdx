@@ -6,7 +6,12 @@ export const postMetadata = {
   description: 'post 2',
   date: '2024-01-15',
   author: 'Tech Blogger',
-  tags: ['js', 'post', 'web-development', 'tutorial'],
+  tags: [
+    'js',
+    'post',
+    'web-development',
+    'tutorial',
+  ],
   published: false,
 };
 
@@ -19,19 +24,27 @@ export const metadata = {
     type: 'article',
     publishedTime: '2024-01-15',
     authors: ['Tech Blogger'],
-    tags: ['js', 'post', 'web-development', 'tutorial'],
+    tags: [
+      'js',
+      'post',
+      'web-development',
+      'tutorial',
+    ],
   },
 };
 
-<PostHeader {...postMetadata} readingTime="3 min read" />
+<PostHeader
+  {...postMetadata}
+  readingTime="3 min read"
+/>
 
 # Plugin Test File
 
 ```ts
 // [!code highlight:2]
-console.log('Not highlighted')
-console.log('Highlighted')
-console.log('Not highlighted')
+console.log('Not highlighted');
+console.log('Highlighted');
+console.log('Not highlighted');
 ```
 
 This file tests if the MDX plugins are working correctly.

@@ -9,6 +9,14 @@ const config = {
   tabWidth: 2,
   semi: true,
   singleQuote: true,
+  overrides: [
+    {
+      files: '**/*.mdx',
+      options: {
+        printWidth: 50,
+      },
+    },
+  ],
 };
 
 export default config;

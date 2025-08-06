@@ -57,6 +57,10 @@ pre {
 
 p a {
   color: var(--accent);
+
+  &:is(:hover, :focus-visible) {
+    text-decoration: underline;
+  }
 }
 
 .line.highlighted {

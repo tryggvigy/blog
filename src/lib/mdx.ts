@@ -2,8 +2,10 @@ import type { Frontmatter } from './types';
 import { postMetadata as cssLayerOrderMeta } from '@/app/blog/css-layer-order-misconception/page.mdx';
 import { postMetadata as post2Meta } from '@/app/blog/post2/page.mdx';
 import { postMetadata as designSystemsMeta } from '@/app/blog/thoughts-on-design-systems/page.mdx';
+import { postMetadata as marqueeMeta } from '@/app/blog/performant-marquee-component/page.mdx';
 
 const allPosts = [
+  marqueeMeta,
   designSystemsMeta,
   post2Meta,
   cssLayerOrderMeta,

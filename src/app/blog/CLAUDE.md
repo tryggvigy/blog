@@ -11,7 +11,7 @@ export const postMetadata = {
   slug: 'post-slug',
   title: 'Post Title',
   description: 'Post description',
-  date: 'YYYY-MM-DD',
+  date: 'Todays date in YYYY-MM-DD format',
   author: 'Tryggvi Gylfason',
   tags: ['tag1', 'tag2', 'tag3'],
   published: true,
@@ -38,6 +38,7 @@ Fill in the frontmatter with the correct values.
 
 IMPORTANT:
 
+- Print width is 50 characters to make code blocks easier to read on mobile devices.
 - NEVER use en dashes, or em dashes
 - NEVER use emojis in the blog post headings
 - Write in a conversational, personal tone - avoid corporate/marketing language
